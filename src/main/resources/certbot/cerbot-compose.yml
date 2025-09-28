@@ -1,0 +1,39 @@
+#services:
+#  certbot:
+#    image: certbot/certbot
+#    container_name: certbot
+#    volumes:
+#      - ./certbot_data/www:/var/www/certbot
+#      - ./certbot_data/conf:/etc/letsencrypt
+#    entrypoint: "/bin/sh -c"
+#    command: >
+#      "certbot certonly --webroot
+#      --webroot-path=/var/www/certbot
+#      --email acc.sibec@gmail.com
+#      --agree-tos
+#      --no-eff-email
+#      -d myapifleetcompany.xyz"
+#
+
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/certbot_data/www:/var/www/certbot  # Directorio web para Certbot
+      - ./certbot/certbot_data/conf:/etc/letsencrypt  # Directorio de certificados
+    entrypoint: "/bin/sh -c"
+    command: >
+      "certbot certonly --webroot
+      --webroot-path=/var/www/certbot
+      --email your-email@example.com
+      --agree-tos
+      --no-eff-email
+      -d myapifleetcompany.xyz"
+    networks:
+      - fleetnet
+    restart: unless-stopped
+
+networks:
+  fleetnet:
+    external: true

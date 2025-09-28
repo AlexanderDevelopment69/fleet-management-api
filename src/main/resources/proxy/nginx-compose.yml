@@ -1,0 +1,20 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: fleetmanagement_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+#      - ./nginx-http.conf:/etc/nginx/conf.d/http.conf #Comentar o descomentar cuando se necesite
+      - ./nginx-https.conf:/etc/nginx/conf.d/https.conf #Comentar o descomentar cuando se necesite
+      - ../certbot/certbot_data/www:/var/www/certbot
+      - ../certbot/certbot_data/conf:/etc/letsencrypt:ro
+      - ../certbot/certbot_data/conf/dhparam.pem:/etc/ssl/certs/dhparam.pem:ro
+    restart: unless-stopped
+    networks:
+      - fleetnet
+
+networks:
+  fleetnet:
+    external: true

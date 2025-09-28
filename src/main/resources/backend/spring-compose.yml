@@ -1,0 +1,111 @@
+#version: '3.8'
+#
+#services:
+#  fleetmanagement:
+#    image: openjdk:17-jdk
+#    container_name: fleetmanagement_api
+#    volumes:
+#      - ./FleetManagement.jar:/app/FleetManagement.jar
+#    working_dir: /app
+#    command: ["java", "-jar", "FleetManagement.jar"]
+#    ports:
+#      - "8080:8080"
+#    restart: unless-stopped
+
+
+#version: '3.8'
+#
+#services:
+#  fleetmanagement:
+#    image: openjdk:17-jdk
+#    container_name: fleetmanagement_api
+#    volumes:
+#      - ./FleetManagement.jar:/app/FleetManagement.jar
+#      - ./keystore.p12:/app/keystore.p12
+#    working_dir: /app
+#    command: ["java", "-jar", "FleetManagement.jar"]
+#    environment:
+#      - SERVER_PORT=8443
+#      - SERVER_SSL_ENABLED=true
+#      - SERVER_SSL_KEY-STORE=/app/keystore.p12
+#      - SERVER_SSL_KEY-STORE-PASSWORD=springbootssl
+#      - SERVER_SSL_KEY-STORE-TYPE=PKCS12
+#      - SERVER_SSL_KEY-ALIAS=springbootssl
+#    ports:
+#      - "8443:8443"
+#    restart: unless-stopped
+
+
+#version: '3.8'
+#
+#services:
+#  fleetmanagement:
+#    image: openjdk:17-jdk
+#    container_name: fleetmanagement_api
+#    volumes:
+#      - ./FleetManagement.jar:/app/FleetManagement.jar
+#      - /etc/letsencrypt/live/myapifleetcompany.xyz/keystore.p12:/app/keystore.p12
+#    working_dir: /app
+#    command: ["java", "-jar", "FleetManagement.jar"]
+#    environment:
+#      - SERVER_PORT=443
+#      - SERVER_SSL_ENABLED=true
+#      - SERVER_SSL_KEY_STORE=/app/keystore.p12
+#      - SERVER_SSL_KEY_STORE_PASSWORD=springbootssl
+#      - SERVER_SSL_KEY_STORE_TYPE=PKCS12
+#      - SERVER_SSL_KEY_ALIAS=springbootssl
+#    ports:
+#      - "443:443"
+#    restart: unless-stopped
+
+
+
+#version: '3.8'
+#
+#services:
+#  fleetmanagement:
+#    image: openjdk:17-jdk
+#    container_name: fleetmanagement_api
+#    volumes:
+#      - ./FleetManagement.jar:/app/FleetManagement.jar  # El archivo JAR de la app
+#    working_dir: /app
+#    command: ["java", "-jar", "FleetManagement.jar"]
+#    environment:
+#      - SERVER_PORT=8080  # Puerto de la app
+#    expose:
+#      - "8080"  # Exponemos el puerto 8080 internamente para que Nginx lo use
+#    networks:
+#      - fleetnet
+#    restart: unless-stopped
+#
+#networks:
+#  fleetnet:
+#    external: true
+
+
+version: '3.8'
+
+services:
+  fleetmanagement:
+    image: openjdk:17-jdk
+    container_name: fleetmanagement_api
+    volumes:
+      - ./FleetManagement.jar:/app/FleetManagement.jar   # El archivo JAR de la app
+    working_dir: /app
+    command: ["java", "-jar", "FleetManagement.jar"]
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SERVER_PORT=${SERVER_PORT}  # Puerto de la app
+    expose:
+      - "8080"  # Exponemos el puerto 8080 internamente para que Nginx lo use
+    networks:
+      - fleetnet
+    restart: unless-stopped
+
+networks:
+  fleetnet:
+    external: true
+
+

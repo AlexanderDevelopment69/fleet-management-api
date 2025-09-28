@@ -1,0 +1,55 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+' LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Contenedor - Sistema de Gestión de Flotas
+
+' Definición de los actores principales
+Person(conductores, "Conductores", "Solicitan vehículos y consultan el estado de sus solicitudes.")
+Person(supervisor, "Supervisor", "Valida las solicitudes realizadas por los conductores.")
+Person(fleet_management, "Área de Fleet Management", "Gestiona la disponibilidad de vehículos y la reposición de documentos.")
+Person(ayvens, "Ayvens", "Agente o tercero involucrado en la gestión de flotas.")
+
+' Definición de los sistemas externos
+System_Ext(sharepoint, "SharePoint Online", "Almacena solicitudes y documentos vehiculares.")
+System_Ext(outlook, "Outlook", "Envía notificaciones automáticas.")
+System_Ext(teams, "Teams", "Envía notificaciones automáticas a través de Teams.")
+System_Ext(pulpo_api, "Pulpo API", "Sistema externo para obtener información sobre vehículos y conductores.")
+
+' Contenedor principal del sistema
+System_Boundary(system, "Fleet Management App") {
+    Container(app, "Fleet Management App", "PowerApps", "Aplicación para gestionar solicitudes, aprobaciones y reportes.", "angular")
+    Container(power_automate, "Power Automate", "Microsoft Power Automate", "Motor de flujos para gestionar aprobaciones y notificaciones automáticas.", "dotnet")
+    Container(sharepoint, "SharePoint Online", "SharePoint", "Repositorios de solicitudes y documentos vehiculares.", "msql_server")
+    Container(pulpo_api, "Pulpo API", "REST API", "Sistema externo para obtener información sobre vehículos y conductores.", "server")
+    ContainerDb(database, "Base de Datos", "SQL Database", "Almacena información sobre vehículos, usuarios y solicitudes.", "mysql_server")
+}
+
+' Relaciones entre los actores y sistemas
+Rel(conductores, app, "Solicita vehículos", "HTTPS")
+Rel(supervisor, app, "Valida las solicitudes de los conductores", "HTTPS")
+Rel(fleet_management, app, "Gestiona la disponibilidad de vehículos y documentos", "HTTPS")
+Rel(ayvens, app, "Interacción como agente", "HTTPS")
+
+Rel(app, sharepoint, "Almacena solicitudes y documentos", "Sync, REST API")
+Rel(app, outlook, "Envía notificaciones a través de Outlook", "Sync, SMTP")
+Rel(app, teams, "Envía notificaciones a través de Teams", "Sync, Webhooks")
+Rel(app, pulpo_api, "Consulta información sobre vehículos y conductores", "Async, JSON/HTTPS")
+
+' Relaciones entre contenedores internos del sistema
+Rel(app, power_automate, "Usa", "Async, JSON/HTTPS")
+Rel(app, sharepoint, "Almacena solicitudes y documentos", "Sync, REST API")
+Rel(power_automate, sharepoint, "Gestiona flujos", "Sync, REST API")
+Rel(app, pulpo_api, "Consulta datos de vehículos y conductores", "Async, JSON/HTTPS")
+
+Rel(app, database, "Lee y escribe en la base de datos", "Sync, JDBC")
+Rel(power_automate, database, "Gestiona flujos de datos", "Async, REST API")
+
+' Mostrar leyenda del diagrama
+SHOW_LEGEND()
+
+@enduml
